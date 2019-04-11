@@ -1,11 +1,11 @@
 package com.sk.kafka.twitter.config;
 
+import com.sk.kafka.twitter.producer.TwitterClient;
 import com.twitter.hbc.ClientBuilder;
 import com.twitter.hbc.core.Client;
 import com.twitter.hbc.core.Constants;
 import com.twitter.hbc.core.HttpHosts;
 import com.twitter.hbc.core.endpoint.StatusesFilterEndpoint;
-import com.twitter.hbc.core.event.Event;
 import com.twitter.hbc.core.processor.StringDelimitedProcessor;
 import com.twitter.hbc.httpclient.auth.Authentication;
 import com.twitter.hbc.httpclient.auth.OAuth1;
@@ -59,21 +59,23 @@ public class TwitterConfiguration {
 
     @Bean
     @Autowired
-    public Client clientBuilder(Authentication hosebirdAuth, StatusesFilterEndpoint hosebirdEndpoint) {
+    public TwitterClient twitterMessageQueue(Authentication auth, StatusesFilterEndpoint endpoint) {
         BlockingQueue<String> msgQueue = new LinkedBlockingQueue<>((queueCapacityMsg));
-        BlockingQueue<Event> eventQueue = new LinkedBlockingQueue<>((queueCapacityEvent));
 
         ClientBuilder builder = new ClientBuilder()
                 .name("Hosebird-Client-01")
                 .hosts(new HttpHosts(Constants.STREAM_HOST))
-                .authentication(hosebirdAuth)
-                .endpoint(hosebirdEndpoint)
-                .processor(new StringDelimitedProcessor(msgQueue))
-                .eventMessageQueue(eventQueue);
+                .authentication(auth)
+                .endpoint(endpoint)
+                .processor(new StringDelimitedProcessor(msgQueue));
 
         Client hosebirdClient = builder.build();
         hosebirdClient.connect();
 
-        return hosebirdClient;
+        TwitterClient twitterClient = new TwitterClient();
+        twitterClient.setClient(hosebirdClient);
+        twitterClient.setMsgQueue(msgQueue);
+
+        return twitterClient;
     }
 }
