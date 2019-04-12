@@ -1,6 +1,7 @@
-package com.sk.kafka.twitter.producer;
+package com.sk.bigdata.twitter.producer;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.producer.Producer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -17,6 +18,7 @@ public class TwitterMessageProducer {
     private String twitterPollDelay;
 
     private TwitterClient twitterClient;
+    private Producer<Long, String> kafkaProducer;
 
     @Scheduled(fixedDelayString = "${twitter.poll.delay}")
     public void pollTwits() {
@@ -37,5 +39,10 @@ public class TwitterMessageProducer {
     @Autowired
     public void setTwitterClient(TwitterClient twitterClient) {
         this.twitterClient = twitterClient;
+    }
+
+    @Autowired
+    public void setKafkaProducer(Producer<Long, String> kafkaProducer) {
+        this.kafkaProducer = kafkaProducer;
     }
 }
