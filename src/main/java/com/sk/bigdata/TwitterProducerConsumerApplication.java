@@ -1,4 +1,4 @@
-package com.sk.bigdata.twitter;
+package com.sk.bigdata;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

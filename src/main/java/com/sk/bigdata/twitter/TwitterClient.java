@@ -1,4 +1,4 @@
-package com.sk.bigdata.twitter.producer;
+package com.sk.bigdata.twitter;
 
 import com.twitter.hbc.core.Client;
 import lombok.Setter;

@@ -1,6 +1,6 @@
-package com.sk.bigdata.twitter.config;
+package com.sk.bigdata.config;
 
-import com.sk.bigdata.twitter.producer.TwitterClient;
+import com.sk.bigdata.twitter.TwitterClient;
 import com.twitter.hbc.ClientBuilder;
 import com.twitter.hbc.core.Client;
 import com.twitter.hbc.core.Constants;
