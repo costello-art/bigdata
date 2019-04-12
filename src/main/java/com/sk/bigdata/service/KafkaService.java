@@ -1,32 +1,30 @@
-package com.sk.bigdata.twitter;
+package com.sk.bigdata.service;
 
+import com.sk.bigdata.kafka.producer.KafkaProducer;
+import com.sk.bigdata.twitter.TwitterClient;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.producer.Producer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.PreDestroy;
 import java.util.List;
 
 @Slf4j
-@Component
-public class TwitterMessageProducer {
-
-    @Value("${twitter.poll.delay}")
-    private String twitterPollDelay;
+@Service
+public class KafkaService {
 
     private TwitterClient twitterClient;
-    private Producer<Long, String> kafkaProducer;
+    private KafkaProducer kafkaProducer;
 
     @Scheduled(fixedDelayString = "${twitter.poll.delay}")
     public void pollTwits() {
-        log.info("Starting polling Twitter messages every {} ms", twitterPollDelay);
+        log.info("Starting twitter poll");
 
         if (!twitterClient.isDone()) {
             List<String> messages = twitterClient.pollAll();
-            log.info("Messages size: {}", messages.size());
+
+            kafkaProducer.saveAll(messages);
         }
     }
 
@@ -42,7 +40,7 @@ public class TwitterMessageProducer {
     }
 
     @Autowired
-    public void setKafkaProducer(Producer<Long, String> kafkaProducer) {
+    public void setKafkaProducer(KafkaProducer kafkaProducer) {
         this.kafkaProducer = kafkaProducer;
     }
 }
