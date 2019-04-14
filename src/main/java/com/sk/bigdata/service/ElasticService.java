@@ -19,7 +19,11 @@ public class ElasticService {
     private RestHighLevelClient elasticClient;
 
     public String write(String message, XContentType contentType) throws IOException {
-        IndexRequest request = new IndexRequest("twitter", "tweets")
+        return write(null, message, contentType);
+    }
+
+    public String write(String id, String message, XContentType contentType) throws IOException {
+        IndexRequest request = new IndexRequest("twitter", "tweets", id)
                 .source(message, contentType);
 
         IndexResponse indexResponse = elasticClient.index(request, RequestOptions.DEFAULT);

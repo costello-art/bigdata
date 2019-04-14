@@ -1,5 +1,6 @@
 package com.sk.bigdata.service;
 
+import com.sk.bigdata.model.TwitModel;
 import com.sk.bigdata.twitter.TwitterClient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
@@ -27,6 +28,7 @@ public class KafkaService {
     private Producer<String, String> kafkaProducer;
     private Consumer<String, String> kafkaConsumer;
     private ElasticService elasticService;
+    private TwitParserService twitParserService;
 
     @Scheduled(fixedDelayString = "${twitter.poll.delay}")
     public void storeTwitsToKafka() {
@@ -51,10 +53,12 @@ public class KafkaService {
         log.debug("Got {} message(s) form Kafka", consumerRecords.count());
 
         for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
-            String value = consumerRecord.value();
+            String twitJson = consumerRecord.value();
+
+            TwitModel twitModel = twitParserService.parseToObj(twitJson);
 
             try {
-                elasticService.write(value, XContentType.JSON);
+                elasticService.write(twitModel.getId(), twitParserService.parseToJson(twitModel), XContentType.JSON);
             } catch (IOException e) {
                 log.error("Unable to store message to ElasticSearch", e);
             }
@@ -85,5 +89,10 @@ public class KafkaService {
     @Autowired
     public void setElasticService(ElasticService elasticService) {
         this.elasticService = elasticService;
+    }
+
+    @Autowired
+    public void setTwitParserService(TwitParserService twitParserService) {
+        this.twitParserService = twitParserService;
     }
 }
