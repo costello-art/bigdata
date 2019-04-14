@@ -18,7 +18,7 @@ public class ElasticService {
 
     private RestHighLevelClient elasticClient;
 
-    public void write(String message, XContentType contentType) throws IOException {
+    public String write(String message, XContentType contentType) throws IOException {
         IndexRequest request = new IndexRequest("twitter", "tweets")
                 .source(message, contentType);
 
@@ -26,6 +26,8 @@ public class ElasticService {
         String id = indexResponse.getId();
 
         log.info("Stored message to elastic, msg id: {}", id);
+
+        return id;
     }
 
     @PreDestroy

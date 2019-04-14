@@ -27,7 +27,7 @@ public class KafkaConfiguration {
     private static final Integer MAX_POLL_RECORDS = 10000;
 
     @Bean
-    public Producer<String, String> producer() {
+    public Producer<String, String> kafkaProducer() {
         Properties props = new Properties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KAFKA_BROKERS);
         props.put(ProducerConfig.CLIENT_ID_CONFIG, CLIENT_ID);
