@@ -23,11 +23,8 @@ public class ElasticService {
                 .source(message, contentType);
 
         IndexResponse indexResponse = elasticClient.index(request, RequestOptions.DEFAULT);
-        String id = indexResponse.getId();
 
-        log.info("Stored message to elastic, msg id: {}", id);
-
-        return id;
+        return indexResponse.getId();
     }
 
     @PreDestroy
