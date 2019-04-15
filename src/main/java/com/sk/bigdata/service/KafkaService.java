@@ -4,11 +4,9 @@ import com.sk.bigdata.model.TwitModel;
 import com.sk.bigdata.twitter.TwitterClient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.elasticsearch.common.xcontent.XContentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -16,6 +14,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.sk.bigdata.config.KafkaConfiguration.TOPIC_NAME;
@@ -52,17 +51,20 @@ public class KafkaService {
 
         log.debug("Got {} message(s) form Kafka", consumerRecords.count());
 
-        for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
-            String twitJson = consumerRecord.value();
+        List<TwitModel> twitModelList = getTwitModels(consumerRecords);
 
-            TwitModel twitModel = twitParserService.parseToObj(twitJson);
-
-            try {
-                elasticService.write(twitModel.getId(), twitParserService.parseToJson(twitModel), XContentType.JSON);
-            } catch (IOException e) {
-                log.error("Unable to store message to ElasticSearch", e);
-            }
+        try {
+            elasticService.writeAll(twitModelList);
+        } catch (IOException e) {
+            log.error("Unable to store message to ElasticSearch", e);
         }
+    }
+
+    private List<TwitModel> getTwitModels(ConsumerRecords<String, String> consumerRecords) {
+        List<TwitModel> twitModelList = new ArrayList<>();
+        consumerRecords.forEach(tweet -> twitModelList.add(twitParserService.parseToObj(tweet.value())));
+
+        return twitModelList;
     }
 
     @PreDestroy
