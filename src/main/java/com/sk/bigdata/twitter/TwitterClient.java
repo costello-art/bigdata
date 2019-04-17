@@ -1,7 +1,6 @@
 package com.sk.bigdata.twitter;
 
 import com.twitter.hbc.core.Client;
-import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,10 +8,7 @@ import java.util.concurrent.BlockingQueue;
 
 public class TwitterClient {
 
-    @Setter
     private Client client;
-
-    @Setter
     private BlockingQueue<String> msgQueue;
 
     public boolean isDone() {
@@ -28,5 +24,13 @@ public class TwitterClient {
 
     public void done() {
         client.stop();
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
+    }
+
+    public void setMsgQueue(BlockingQueue<String> msgQueue) {
+        this.msgQueue = msgQueue;
     }
 }

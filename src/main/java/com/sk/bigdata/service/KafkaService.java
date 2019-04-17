@@ -2,11 +2,12 @@ package com.sk.bigdata.service;
 
 import com.sk.bigdata.model.TwitModel;
 import com.sk.bigdata.twitter.TwitterClient;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -19,9 +20,9 @@ import java.util.List;
 
 import static com.sk.bigdata.config.KafkaConfiguration.TOPIC_NAME;
 
-@Slf4j
 @Service
 public class KafkaService {
+    private Logger log = LoggerFactory.getLogger(this.getClass());
 
     private TwitterClient twitterClient;
     private Producer<String, String> kafkaProducer;

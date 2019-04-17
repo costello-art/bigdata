@@ -1,7 +1,6 @@
 package com.sk.bigdata.service;
 
 import com.sk.bigdata.model.TwitModel;
-import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
@@ -9,6 +8,8 @@ import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -18,8 +19,8 @@ import java.io.IOException;
 import java.util.List;
 
 @Service
-@Slf4j
 public class ElasticService {
+    private Logger log = LoggerFactory.getLogger(this.getClass());
 
     private RestHighLevelClient elasticClient;
     private TwitParserService twitParserService;
